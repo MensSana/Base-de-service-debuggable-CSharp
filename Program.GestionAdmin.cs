@@ -21,7 +21,7 @@ namespace ServiceDemo
 		{
 			using LeService service = new();
 			// Appeler la méthode qu'appellerait le service
-      throw new NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		static void LancerEnModeConsole(string[] args)
@@ -129,6 +129,53 @@ namespace ServiceDemo
 				installateur.Context = installContext;
 				return installateur;
 			}
+		}
+		
+		/// <summary>
+		/// Prépare la journalisation dans le EventViewer
+		/// et dans le système de fichiers
+		/// </summary>
+		public static void AjouterLaJournalisationÀLObservateur()
+		{
+			Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+			Console.WriteLine("");
+			Console.WriteLine(" =====");
+			Console.WriteLine($" ===== Démarrage ===== {DateTime.Now:yyyy-MM-dd HH:mm:ss} =====");
+			Console.WriteLine(" =====");
+			Console.WriteLine("");
+
+			JournalÉvènementiel = new EventLog()
+			{
+				Source = SourceDuJournal,
+				Log = NomDuJournal
+			};
+			if (Environment.UserInteractive)
+			{
+				_InclureLesEntêtes = true;
+				try
+				{
+					if (!EventLog.SourceExists(LogSource))
+					{
+						try
+						{
+							EventLog.CreateEventSource(LogSource, LogName);
+						}
+						catch (Exception ex)
+						{
+							Trace.WriteLine(ex.Message);
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					Trace.WriteLine(ex.Message);
+				}
+			}
+		}
+
+		public static void SupprimerLaJournalisationDeLObservateur()
+		{
+			EventLog.Delete(NomDuJournal);
 		}
 	}
 }
